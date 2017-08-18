@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.infection.dao.InfectionDao">
+	<resultMap id="BaseResultMap" type="cn.infection.entity.Infection">
+		<id column="infectionId" jdbcType="INTEGER" property="infectionId" />
+		<result column="infectionName" jdbcType="VARCHAR" property="infectionName" />
+		<result column="type" jdbcType="INTEGER" property="type" />
+		<result column="insulateTime" jdbcType="INTEGER" property="insulateTime" />
+		<result column="isDel" jdbcType="INTEGER" property="isDel" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		infectionId, infectionName, insulateTime, type, isDel
+	</sql>
+	<select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultType="cn.infection.entity.Infection">
+		select ii.infectionId, ii.infectionName, ii.insulateTime, ii.type, ii.isDel ,it.typeName typeName
+		from infection_infection ii
+		left join infection_type it on ii.type = it.typeId
+		where infectionId = #{infectionId,jdbcType=INTEGER}
+		and ii.isDel = 1
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from infection_infection
+		where infectionId = #{infectionId,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="cn.infection.entity.Infection">
+		insert into infection_infection (infectionId, infectionName, type,
+		isDel)
+		values (#{infectionId,jdbcType=INTEGER},
+		#{insulateTime,jdbcType=INTEGER},
+		#{infectionName,jdbcType=VARCHAR},
+		#{type,jdbcType=INTEGER},
+		#{isDel,jdbcType=INTEGER})
+	</insert>
+	<insert id="insertSelective" parameterType="cn.infection.entity.Infection">
+		insert into infection_infection
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="infectionId != null">
+				infectionId,
+			</if>
+			<if test="infectionName != null">
+				infectionName,
+			</if>
+			<if test="insulateTime != null">
+				insulateTime,
+			</if>
+			<if test="type != null">
+				type,
+			</if>
+			<if test="isDel != null">
+				isDel,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="infectionId != null">
+				#{infectionId,jdbcType=INTEGER},
+			</if>
+			<if test="infectionName != null">
+				#{infectionName,jdbcType=VARCHAR},
+			</if>
+			<if test="insulateTime != null">
+				#{insulateTime,jdbcType=INTEGER},
+			</if>
+			<if test="type != null">
+				#{type,jdbcType=INTEGER},
+			</if>
+			<if test="isDel != null">
+				#{isDel,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="cn.infection.entity.Infection">
+		update infection_infection
+		<set>
+			<if test="infectionName != null">
+				infectionName = #{infectionName,jdbcType=VARCHAR},
+			</if>
+			<if test="insulateTime != null">
+				insulateTime = #{insulateTime,jdbcType=INTEGER},
+			</if>
+			<if test="type != null">
+				type = #{type,jdbcType=INTEGER},
+			</if>
+			<if test="isDel != null">
+				isDel = #{isDel,jdbcType=INTEGER},
+			</if>
+		</set>
+		where infectionId = #{infectionId,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="cn.infection.entity.Infection">
+		update infection_infection
+		set infectionName = #{infectionName,jdbcType=VARCHAR},
+		insulateTime = #{insulateTime,jdbcType=INTEGER},
+		type = #{type,jdbcType=INTEGER},
+		isDel = #{isDel,jdbcType=INTEGER}
+		where infectionId = #{infectionId,jdbcType=INTEGER}
+	</update>
+
+	<!-- 分页查询传染病 -->
+	<select id="getAllInfection" parameterType="cn.infection.model.InfectionPage" resultType="cn.infection.entity.Infection">
+		SELECT ii.infectionId,ii.infectionName,ii.insulateTime,it.typeName
+		FROM infection_infection ii
+		LEFT JOIN infection_type it ON ii.type = it.typeId
+		WHERE 1 = 1
+		AND ii.isDel=1
+		<if test="typeId != null and typeId != ''">
+			AND ii.type = #{typeId,jdbcType=INTEGER}
+		</if>
+		<if test="name != null and name != ''">
+			AND ii.infectionName like CONCAT(CONCAT('%',#{name}),'%') 
+		</if>
+		limit 
+			#{begin},#{end}
+	</select>
+
+	<!--  查询记录数 -->
+	<select id="getAllCount" parameterType="cn.infection.model.InfectionPage" resultType="int">
+		SELECT count(*)
+		FROM infection_infection ii
+		LEFT JOIN infection_type it ON ii.type = it.typeId
+		WHERE 1 = 1
+		AND ii.isDel=1
+		<if test="typeId != null and typeId != ''">
+			AND ii.type = #{typeId,jdbcType=INTEGER}
+		</if>
+		<if test="name != null and name != ''">
+			AND ii.infectionName like CONCAT(CONCAT('%',#{name}),'%') 
+		</if>
+	</select>
+
+	<!-- 根据种类查询全部的病种 -->
+	<select id="getAllByTypeId" parameterType="string" resultType="cn.infection.entity.Infection">
+		SELECT * FROM infection_infection a WHERE a.type=#{typeId}
+	</select>
+</mapper>

@@ -1,0 +1,522 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.infection.dao.StatisticalAnalysisDao">
+	<!-- 统计分析-按年龄统计-死亡人数 -->
+	<select id="getStatisticsDeathByAge" parameterType="cn.infection.model.StatisticsPage"
+		resultType="java.util.Map">
+		SELECT age,sex,count,infectionName FROM ( SELECT
+		COUNT(*) as
+		count,a.sex,a.infectionId,a.age,b.infectionName,d.typeName,c.schoolName
+		FROM infection_report a
+		LEFT JOIN infection_infection b ON
+		a.infectionId=b.infectionId
+		LEFT JOIN infection_school c ON
+		a.schoolId=c.schoolId
+		LEFT JOIN infection_type d ON b.type=d.typeId
+		WHERE 1=1 AND a.isDel='0' AND a.deathTime>'0000-00-00 00:00:00'
+		<!-- timeType为0时根据发病时间 -->
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("0") &amp;&amp; startTime!=null &amp;&amp; !startTime.equals("")'>
+			AND a.onsetTime &gt;= #{startTime}
+		</if>
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("0") &amp;&amp; endTime!=null &amp;&amp; !endTime.equals("")'>
+			AND a.onsetTime &lt;= #{endTime}
+		</if>
+		<!-- timeType为1时根据诊断时间 -->
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("1") &amp;&amp; startTime!=null &amp;&amp; !startTime.equals("")'>
+			AND a.diagnosisTime &gt;= #{startTime}
+		</if>
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("1") &amp;&amp; endTime!=null &amp;&amp; !endTime.equals("")'>
+			AND a.diagnosisTime &lt;= #{endTime}
+		</if>
+		<!-- timeType为2时根据死亡时间 -->
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("2") &amp;&amp; startTime!=null &amp;&amp; !startTime.equals("")'>
+			AND a.deathTime &gt;= #{startTime}
+		</if>
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("2") &amp;&amp; endTime!=null &amp;&amp; !endTime.equals("")'>
+			AND a.deathTime &lt;= #{endTime}
+		</if>
+		<!-- timeType为3时根据填卡时间 -->
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("3") &amp;&amp; startTime!=null &amp;&amp; !startTime.equals("")'>
+			AND a.fillTime &gt;= #{startTime}
+		</if>
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("3") &amp;&amp; endTime!=null &amp;&amp; !endTime.equals("")'>
+			AND a.fillTime &lt;= #{endTime}
+		</if>
+		<if test="level != null and level != ''">
+			AND c.level = #{level,jdbcType=INTEGER}
+		</if>
+		<if test="schoolId != null and schoolId != ''">
+			AND c.schoolId = #{schoolId,jdbcType=INTEGER}
+		</if>
+		<if test="typeName != null and typeName != ''">
+			AND d.typeName = #{typeName,jdbcType=VARCHAR}
+		</if>
+		<if test="infectionId != null and infectionId != ''">
+			AND b.infectionId = #{infectionId,jdbcType=INTEGER}
+		</if>
+		GROUP BY a.age ORDER BY a.age asc
+		limit #{begin},#{end}
+		) as tmp
+	</select>
+	<!-- 统计分析-按年龄统计-发病人数 -->
+	<select id="getDataByAge" parameterType="cn.infection.model.StatisticsPage"
+		resultType="java.util.Map">
+		SELECT age,SUM(CASE WHEN sex=1 AND isdeal=1 THEN 1 ELSE 0 END ) AS boyIll,
+			SUM(CASE WHEN sex=0 AND isdeal=1 THEN 1 ELSE 0 END ) AS girlIll,
+			SUM(CASE WHEN  isdeal=1 THEN 1 ELSE 0 END ) AS totalIll,
+			SUM(CASE WHEN sex=1 AND isdeal=0 THEN 1 ELSE 0 END ) AS boyDeath,
+			SUM(CASE WHEN sex=0 AND isdeal=0 THEN 1 ELSE 0 END ) AS girlDeath,
+			SUM(CASE WHEN  isdeal=0 THEN 1 ELSE 0 END ) AS totalDeath
+		FROM (
+		SELECT 
+		  a.sex,
+		  a.infectionId,
+		  a.age,
+		  b.infectionName,
+		  d.typeName,
+		  c.schoolName,
+		  ISNULL(a.deathTime) AS isdeal 
+		FROM
+		  infection_report a 
+		  LEFT JOIN infection_infection b 
+		    ON a.infectionId = b.infectionId 
+		  LEFT JOIN infection_school c 
+		    ON a.schoolId = c.schoolId 
+		  LEFT JOIN infection_type d 
+		    ON b.type = d.typeId 
+		WHERE 1 = 1 
+		  AND a.isDel = '0' 
+		 and a.iszero = 0
+		<!-- timeType为0时根据发病时间 -->
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("0") &amp;&amp; startTime!=null &amp;&amp; !startTime.equals("")'>
+			AND a.onsetTime &gt;= #{startTime}
+		</if>
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("0") &amp;&amp; endTime!=null &amp;&amp; !endTime.equals("")'>
+			AND a.onsetTime &lt;= #{endTime}
+		</if>
+		<!-- timeType为1时根据诊断时间 -->
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("1") &amp;&amp; startTime!=null &amp;&amp; !startTime.equals("")'>
+			AND a.diagnosisTime &gt;= #{startTime}
+		</if>
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("1") &amp;&amp; endTime!=null &amp;&amp; !endTime.equals("")'>
+			AND a.diagnosisTime &lt;= #{endTime}
+		</if>
+		<!-- timeType为2时根据死亡时间 -->
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("2") &amp;&amp; startTime!=null &amp;&amp; !startTime.equals("")'>
+			AND a.deathTime &gt;= #{startTime}
+		</if>
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("2") &amp;&amp; endTime!=null &amp;&amp; !endTime.equals("")'>
+			AND a.deathTime &lt;= #{endTime}
+		</if>
+		<!-- timeType为3时根据填卡时间 -->
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("3") &amp;&amp; startTime!=null &amp;&amp; !startTime.equals("")'>
+			AND a.fillTime &gt;= #{startTime}
+		</if>
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("3") &amp;&amp; endTime!=null &amp;&amp; !endTime.equals("")'>
+			AND a.fillTime &lt;= #{endTime}
+		</if>
+		<if test="level != null and level != ''">
+			AND c.level = #{level,jdbcType=INTEGER}
+		</if>
+		<if test="schoolId != null and schoolId != ''">
+			AND c.schoolId = #{schoolId,jdbcType=INTEGER}
+		</if>
+		<if test="typeName != null and typeName != ''">
+			AND d.typeId = #{typeName,jdbcType=VARCHAR}
+		</if>
+		<if test="infectionId != null and infectionId != ''">
+			AND b.infectionId = #{infectionId,jdbcType=INTEGER}
+		</if>
+		) as a
+		  GROUP BY age
+		limit #{begin},#{end}
+	</select>
+	<!--统计分析-按年龄统计总数 -->
+	<select id="getStatisticsByAgeCount" parameterType="cn.infection.model.StatisticsPage"
+		resultType="int">
+		SELECT COUNT(*) FROM ( SELECT age,SUM(CASE WHEN sex=1 AND isdeal=1 THEN 1 ELSE 0 END ) AS boyIll,
+			SUM(CASE WHEN sex=0 AND isdeal=1 THEN 1 ELSE 0 END ) AS girlIll,
+			SUM(CASE WHEN  isdeal=1 THEN 1 ELSE 0 END ) AS totalIll,
+			SUM(CASE WHEN sex=1 AND isdeal=0 THEN 1 ELSE 0 END ) AS boyDeath,
+			SUM(CASE WHEN sex=0 AND isdeal=0 THEN 1 ELSE 0 END ) AS girlDeath,
+			SUM(CASE WHEN  isdeal=0 THEN 1 ELSE 0 END ) AS totalDeath
+		FROM (
+		SELECT 
+		  a.sex,
+		  a.infectionId,
+		  a.age,
+		  b.infectionName,
+		  d.typeName,
+		  c.schoolName,
+		  ISNULL(a.deathTime) AS isdeal 
+		FROM
+		  infection_report a 
+		  LEFT JOIN infection_infection b 
+		    ON a.infectionId = b.infectionId 
+		  LEFT JOIN infection_school c 
+		    ON a.schoolId = c.schoolId 
+		  LEFT JOIN infection_type d 
+		    ON b.type = d.typeId 
+		WHERE 1 = 1 
+		  AND a.isDel = '0' 
+		 and a.iszero = 0
+		<!-- timeType为0时根据发病时间 -->
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("0") &amp;&amp; startTime!=null &amp;&amp; !startTime.equals("")'>
+			AND a.onsetTime &gt;= #{startTime}
+		</if>
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("0") &amp;&amp; endTime!=null &amp;&amp; !endTime.equals("")'>
+			AND a.onsetTime &lt;= #{endTime}
+		</if>
+		<!-- timeType为1时根据诊断时间 -->
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("1") &amp;&amp; startTime!=null &amp;&amp; !startTime.equals("")'>
+			AND a.diagnosisTime &gt;= #{startTime}
+		</if>
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("1") &amp;&amp; endTime!=null &amp;&amp; !endTime.equals("")'>
+			AND a.diagnosisTime &lt;= #{endTime}
+		</if>
+		<!-- timeType为2时根据死亡时间 -->
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("2") &amp;&amp; startTime!=null &amp;&amp; !startTime.equals("")'>
+			AND a.deathTime &gt;= #{startTime}
+		</if>
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("2") &amp;&amp; endTime!=null &amp;&amp; !endTime.equals("")'>
+			AND a.deathTime &lt;= #{endTime}
+		</if>
+		<!-- timeType为3时根据填卡时间 -->
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("3") &amp;&amp; startTime!=null &amp;&amp; !startTime.equals("")'>
+			AND a.fillTime &gt;= #{startTime}
+		</if>
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("3") &amp;&amp; endTime!=null &amp;&amp; !endTime.equals("")'>
+			AND a.fillTime &lt;= #{endTime}
+		</if>
+		<if test="level != null and level != ''">
+			AND c.level = #{level,jdbcType=INTEGER}
+		</if>
+		<if test="schoolId != null and schoolId != ''">
+			AND c.schoolId = #{schoolId,jdbcType=INTEGER}
+		</if>
+		<if test="typeName != null and typeName != ''">
+			AND d.typeId = #{typeName,jdbcType=VARCHAR}
+		</if>
+		<if test="infectionId != null and infectionId != ''">
+			AND b.infectionId = #{infectionId,jdbcType=INTEGER}
+		</if>
+		) as a
+		  GROUP BY age) tmp
+	</select>
+
+	<!-- 统计分析-按学校统计-死亡人数 -->
+	<select id="getDataBySchool" parameterType="cn.infection.model.StatisticsPage"
+		resultType="java.util.Map">
+		SELECT schoolName,SUM(CASE WHEN sex=1 AND isdeal=1 THEN 1 ELSE 0 END ) AS boyIll,
+			SUM(CASE WHEN sex=0 AND isdeal=1 THEN 1 ELSE 0 END ) AS girlIll,
+			SUM(CASE WHEN  isdeal=1 THEN 1 ELSE 0 END ) AS totalIll,
+			SUM(CASE WHEN sex=1 AND isdeal=0 THEN 1 ELSE 0 END ) AS boyDeath,
+			SUM(CASE WHEN sex=0 AND isdeal=0 THEN 1 ELSE 0 END ) AS girlDeath,
+			SUM(CASE WHEN  isdeal=0 THEN 1 ELSE 0 END ) AS totalDeath
+		FROM (
+		SELECT 
+		  a.sex,
+		  a.infectionId,
+		  a.age,
+		  b.infectionName,
+		  d.typeName,
+		  c.schoolName,
+		  ISNULL(a.deathTime) AS isdeal 
+		FROM
+		  infection_report a 
+		  LEFT JOIN infection_infection b 
+		    ON a.infectionId = b.infectionId 
+		  LEFT JOIN infection_school c 
+		    ON a.schoolId = c.schoolId 
+		  LEFT JOIN infection_type d 
+		    ON b.type = d.typeId 
+		WHERE 1 = 1 
+		  AND a.isDel = '0' 
+		 and a.iszero = 0
+		<!-- timeType为0时根据发病时间 -->
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("0") &amp;&amp; startTime!=null &amp;&amp; !startTime.equals("")'>
+			AND a.onsetTime &gt;= #{startTime}
+		</if>
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("0") &amp;&amp; endTime!=null &amp;&amp; !endTime.equals("")'>
+			AND a.onsetTime &lt;= #{endTime}
+		</if>
+		<!-- timeType为1时根据诊断时间 -->
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("1") &amp;&amp; startTime!=null &amp;&amp; !startTime.equals("")'>
+			AND a.diagnosisTime &gt;= #{startTime}
+		</if>
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("1") &amp;&amp; endTime!=null &amp;&amp; !endTime.equals("")'>
+			AND a.diagnosisTime &lt;= #{endTime}
+		</if>
+		<!-- timeType为2时根据死亡时间 -->
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("2") &amp;&amp; startTime!=null &amp;&amp; !startTime.equals("")'>
+			AND a.deathTime &gt;= #{startTime}
+		</if>
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("2") &amp;&amp; endTime!=null &amp;&amp; !endTime.equals("")'>
+			AND a.deathTime &lt;= #{endTime}
+		</if>
+		<!-- timeType为3时根据填卡时间 -->
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("3") &amp;&amp; startTime!=null &amp;&amp; !startTime.equals("")'>
+			AND a.fillTime &gt;= #{startTime}
+		</if>
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("3") &amp;&amp; endTime!=null &amp;&amp; !endTime.equals("")'>
+			AND a.fillTime &lt;= #{endTime}
+		</if>
+		<if test="level != null and level != ''">
+			AND c.level = #{level,jdbcType=INTEGER}
+		</if>
+		<if test="schoolId != null and schoolId != ''">
+			AND c.schoolId = #{schoolId,jdbcType=INTEGER}
+		</if>
+		<if test="typeName != null and typeName != ''">
+			AND d.typeId = #{typeName,jdbcType=VARCHAR}
+		</if>
+		<if test="infectionId != null and infectionId != ''">
+			AND b.infectionId = #{infectionId,jdbcType=INTEGER}
+		</if>
+		
+		  )a
+		  GROUP BY schoolName
+		  limit #{begin},#{end}
+	</select>
+	<!-- 统计分析-按学校统计-发病人数 -->
+	<select id="getStatisticsMorbidityBySchool" parameterType="cn.infection.model.StatisticsPage"
+		resultType="java.util.Map">
+		SELECT tmp1.schoolName,tmp1.count as boyCount,tmp2.count as
+		girlCount,(tmp1.count+tmp2.count) as sexCount FROM ( SELECT
+		COUNT(*) as
+		count,a.sex,a.infectionId,a.age,d.typeName,c.schoolName
+		FROM
+		infection_report a
+		LEFT JOIN infection_infection b ON
+		a.infectionId=b.infectionId
+		LEFT JOIN infection_school c ON
+		a.schoolId=c.schoolId
+		LEFT JOIN infection_type d ON b.type=d.typeId
+		WHERE 1=1 AND a.isDel='0' AND a.sex='0'
+		<!-- timeType为0时根据发病时间 -->
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("0") &amp;&amp; startTime!=null &amp;&amp; !startTime.equals("")'>
+			AND a.onsetTime &gt;= #{startTime}
+		</if>
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("0") &amp;&amp; endTime!=null &amp;&amp; !endTime.equals("")'>
+			AND a.onsetTime &lt;= #{endTime}
+		</if>
+		<!-- timeType为1时根据诊断时间 -->
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("1") &amp;&amp; startTime!=null &amp;&amp; !startTime.equals("")'>
+			AND a.diagnosisTime &gt;= #{startTime}
+		</if>
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("1") &amp;&amp; endTime!=null &amp;&amp; !endTime.equals("")'>
+			AND a.diagnosisTime &lt;= #{endTime}
+		</if>
+		<!-- timeType为2时根据死亡时间 -->
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("2") &amp;&amp; startTime!=null &amp;&amp; !startTime.equals("")'>
+			AND a.deathTime &gt;= #{startTime}
+		</if>
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("2") &amp;&amp; endTime!=null &amp;&amp; !endTime.equals("")'>
+			AND a.deathTime &lt;= #{endTime}
+		</if>
+		<!-- timeType为3时根据填卡时间 -->
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("3") &amp;&amp; startTime!=null &amp;&amp; !startTime.equals("")'>
+			AND a.fillTime &gt;= #{startTime}
+		</if>
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("3") &amp;&amp; endTime!=null &amp;&amp; !endTime.equals("")'>
+			AND a.fillTime &lt;= #{endTime}
+		</if>
+		<if test="level != null and level != ''">
+			AND c.level = #{level,jdbcType=INTEGER}
+		</if>
+		<if test="schoolId != null and schoolId != ''">
+			AND c.schoolId = #{schoolId,jdbcType=INTEGER}
+		</if>
+		<if test="typeName != null and typeName != ''">
+			AND d.typeName = #{typeName,jdbcType=VARCHAR}
+		</if>
+		<if test="infectionId != null and infectionId != ''">
+			AND b.infectionId = #{infectionId,jdbcType=INTEGER}
+		</if>
+		GROUP BY a.sex,c.schoolName ORDER BY b.infectionName DESC
+		) as tmp1
+		JOIN (
+		SELECT schoolName,sex,count FROM ( SELECT
+		COUNT(*) as
+		count,a.sex,a.infectionId,a.age,d.typeName,c.schoolName
+		FROM
+		infection_report a
+		LEFT JOIN infection_infection b ON
+		a.infectionId=b.infectionId
+		LEFT JOIN infection_school c ON
+		a.schoolId=c.schoolId
+		LEFT JOIN infection_type d ON b.type=d.typeId
+		WHERE 1=1 AND a.isDel='0' AND a.sex='1'
+		<!-- timeType为0时根据发病时间 -->
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("0") &amp;&amp; startTime!=null &amp;&amp; !startTime.equals("")'>
+			AND a.onsetTime &gt;= #{startTime}
+		</if>
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("0") &amp;&amp; endTime!=null &amp;&amp; !endTime.equals("")'>
+			AND a.onsetTime &lt;= #{endTime}
+		</if>
+		<!-- timeType为1时根据诊断时间 -->
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("1") &amp;&amp; startTime!=null &amp;&amp; !startTime.equals("")'>
+			AND a.diagnosisTime &gt;= #{startTime}
+		</if>
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("1") &amp;&amp; endTime!=null &amp;&amp; !endTime.equals("")'>
+			AND a.diagnosisTime &lt;= #{endTime}
+		</if>
+		<!-- timeType为2时根据死亡时间 -->
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("2") &amp;&amp; startTime!=null &amp;&amp; !startTime.equals("")'>
+			AND a.deathTime &gt;= #{startTime}
+		</if>
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("2") &amp;&amp; endTime!=null &amp;&amp; !endTime.equals("")'>
+			AND a.deathTime &lt;= #{endTime}
+		</if>
+		<!-- timeType为3时根据填卡时间 -->
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("3") &amp;&amp; startTime!=null &amp;&amp; !startTime.equals("")'>
+			AND a.fillTime &gt;= #{startTime}
+		</if>
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("3") &amp;&amp; endTime!=null &amp;&amp; !endTime.equals("")'>
+			AND a.fillTime &lt;= #{endTime}
+		</if>
+		<if test="level != null and level != ''">
+			AND c.level = #{level,jdbcType=INTEGER}
+		</if>
+		<if test="schoolId != null and schoolId != ''">
+			AND c.schoolId = #{schoolId,jdbcType=INTEGER}
+		</if>
+		<if test="typeName != null and typeName != ''">
+			AND d.typeName = #{typeName,jdbcType=VARCHAR}
+		</if>
+		<if test="infectionId != null and infectionId != ''">
+			AND b.infectionId = #{infectionId,jdbcType=INTEGER}
+		</if>
+		GROUP BY a.sex,c.schoolName ORDER BY b.infectionName DESC
+		) as tmp) tmp2 ON tmp1.schoolName=tmp2.schoolName
+	</select>
+	<!--统计分析-按学校统计总数 -->
+	<select id="getStatisticsBySchoolCount" parameterType="cn.infection.model.StatisticsPage"
+		resultType="int">
+		SELECT COUNT(*) FROM (SELECT schoolName,SUM(CASE WHEN sex=1 AND isdeal=1 THEN 1 ELSE 0 END ) AS boyIll,
+			SUM(CASE WHEN sex=0 AND isdeal=1 THEN 1 ELSE 0 END ) AS girlIll,
+			SUM(CASE WHEN  isdeal=1 THEN 1 ELSE 0 END ) AS totalIll,
+			SUM(CASE WHEN sex=1 AND isdeal=0 THEN 1 ELSE 0 END ) AS boyDeath,
+			SUM(CASE WHEN sex=0 AND isdeal=0 THEN 1 ELSE 0 END ) AS girlDeath,
+			SUM(CASE WHEN  isdeal=0 THEN 1 ELSE 0 END ) AS totalDeath
+		FROM (
+		SELECT 
+		  a.sex,
+		  a.infectionId,
+		  a.age,
+		  b.infectionName,
+		  d.typeName,
+		  c.schoolName,
+		  ISNULL(a.deathTime) AS isdeal 
+		FROM
+		  infection_report a 
+		  LEFT JOIN infection_infection b 
+		    ON a.infectionId = b.infectionId 
+		  LEFT JOIN infection_school c 
+		    ON a.schoolId = c.schoolId 
+		  LEFT JOIN infection_type d 
+		    ON b.type = d.typeId 
+		WHERE 1 = 1 
+		  AND a.isDel = '0' 
+		 and a.iszero = 0
+		<!-- timeType为0时根据发病时间 -->
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("0") &amp;&amp; startTime!=null &amp;&amp; !startTime.equals("")'>
+			AND a.onsetTime &gt;= #{startTime}
+		</if>
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("0") &amp;&amp; endTime!=null &amp;&amp; !endTime.equals("")'>
+			AND a.onsetTime &lt;= #{endTime}
+		</if>
+		<!-- timeType为1时根据诊断时间 -->
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("1") &amp;&amp; startTime!=null &amp;&amp; !startTime.equals("")'>
+			AND a.diagnosisTime &gt;= #{startTime}
+		</if>
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("1") &amp;&amp; endTime!=null &amp;&amp; !endTime.equals("")'>
+			AND a.diagnosisTime &lt;= #{endTime}
+		</if>
+		<!-- timeType为2时根据死亡时间 -->
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("2") &amp;&amp; startTime!=null &amp;&amp; !startTime.equals("")'>
+			AND a.deathTime &gt;= #{startTime}
+		</if>
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("2") &amp;&amp; endTime!=null &amp;&amp; !endTime.equals("")'>
+			AND a.deathTime &lt;= #{endTime}
+		</if>
+		<!-- timeType为3时根据填卡时间 -->
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("3") &amp;&amp; startTime!=null &amp;&amp; !startTime.equals("")'>
+			AND a.fillTime &gt;= #{startTime}
+		</if>
+		<if
+			test='timeType != null &amp;&amp; timeType.equals("3") &amp;&amp; endTime!=null &amp;&amp; !endTime.equals("")'>
+			AND a.fillTime &lt;= #{endTime}
+		</if>
+		<if test="level != null and level != ''">
+			AND c.level = #{level,jdbcType=INTEGER}
+		</if>
+		<if test="schoolId != null and schoolId != ''">
+			AND c.schoolId = #{schoolId,jdbcType=INTEGER}
+		</if>
+		<if test="typeName != null and typeName != ''">
+			AND d.typeId = #{typeName,jdbcType=VARCHAR}
+		</if>
+		<if test="infectionId != null and infectionId != ''">
+			AND b.infectionId = #{infectionId,jdbcType=INTEGER}
+		</if>
+		  )a
+		  GROUP BY schoolName) as tmp
+	</select>
+
+</mapper>

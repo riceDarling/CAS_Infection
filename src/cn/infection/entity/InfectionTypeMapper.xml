@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.infection.dao.InfectionTypeDao">
+
+	<resultMap id="BaseResultMap" type="cn.infection.entity.InfectionType">
+		<id column="typeId" jdbcType="INTEGER" property="typeId" />
+		<result column="typeName" jdbcType="VARCHAR" property="typeName" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		typeId, typeName
+	</sql>
+
+	<select id="selectByPrimaryKey" parameterType="java.lang.Integer"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from infection_type
+		where typeId = #{typeId,jdbcType=INTEGER}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from infection_type
+		where typeId = #{typeId,jdbcType=INTEGER}
+	</delete>
+
+	<insert id="insert" parameterType="cn.infection.entity.InfectionType">
+		insert into infection_type (typeId, typeName)
+		values (#{typeId,jdbcType=INTEGER}, #{typeName,jdbcType=VARCHAR})
+	</insert>
+
+	<insert id="insertSelective" parameterType="cn.infection.entity.InfectionType">
+		insert into infection_type
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="typeId != null">
+				typeId,
+			</if>
+			<if test="typeName != null">
+				typeName,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="typeId != null">
+				#{typeId,jdbcType=INTEGER},
+			</if>
+			<if test="typeName != null">
+				#{typeName,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="cn.infection.entity.InfectionType">
+		update infection_type
+		<set>
+			<if test="typeName != null">
+				typeName = #{typeName,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where typeId = #{typeId,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="cn.infection.entity.InfectionType">
+		update infection_type
+		set typeName = #{typeName,jdbcType=VARCHAR}
+		where typeId = #{typeId,jdbcType=INTEGER}
+	</update>
+	
+	<!-- 分页查询传染病类型 -->
+	<select id="getAllType" parameterType="cn.infection.model.TypePage" resultType="cn.infection.entity.InfectionType">
+		SELECT it.typeId,it.typeName
+		FROM infection_type it
+		WHERE 1 = 1
+		<if test="name != null and name != ''">
+			AND it.typeName like CONCAT(CONCAT('%',#{name}),'%') 
+		</if>
+		limit 
+			#{begin},#{end}
+	</select>
+	
+	<!--  查询记录数 -->
+	<select id="getAllCount" parameterType="cn.infection.model.TypePage" resultType="int">
+		SELECT count(*)
+		FROM infection_type it
+		WHERE 1 = 1
+		<if test="name != null and name != ''">
+			AND it.typeName like CONCAT(CONCAT('%',#{name}),'%') 
+		</if>
+	</select>
+	
+	<!-- 查询传染病类型 -->
+	<select id="selectAllType" resultType="cn.infection.entity.InfectionType">
+		SELECT it.typeId,it.typeName
+		FROM infection_type it
+		ORDER BY it.typeId
+	</select>
+
+</mapper>

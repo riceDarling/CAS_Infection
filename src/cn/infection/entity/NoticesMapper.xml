@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.infection.dao.NoticesDao">
+
+	<resultMap id="BaseResultMap" type="cn.infection.entity.Notices">
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="schoolId" jdbcType="INTEGER" property="schoolId" />
+		<result column="content" jdbcType="VARCHAR" property="content" />
+		<result column="createTime" jdbcType="TIMESTAMP" property="createTime" />
+		<result column="isRead" jdbcType="INTEGER" property="isRead" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		id, schoolId, content, createTime, isRead
+	</sql>
+
+	<!-- 根据学校查询当然未读通知 -->
+	<select id="selectByCond" parameterType="cn.infection.model.NoticesPage" resultType="cn.infection.entity.Notices">
+		SELECT id, schoolId, content, DATE_FORMAT(createTime,"%Y-%m-%d %H:%i:%s") createTime, isRead
+		FROM infection_notices
+		WHERE 1 = 1
+		<if test="schoolId != null and schoolId != ''">
+			AND schoolId = #{schoolId,jdbcType=INTEGER}
+		</if>	
+		<if test="isRead != null and isRead != ''">
+			AND isRead = #{isRead,jdbcType=VARCHAR}
+		</if>	
+		AND	DATE_FORMAT(createTime,"%Y-%m-%D") = DATE_FORMAT(NOW(),"%Y-%m-%D")
+		order by createTime DESC
+		limit 
+			#{begin},#{end}
+	</select>
+	
+	<!-- 根据学校查询当然未读通知记录数 -->
+	<select id="getCountByCond" parameterType="cn.infection.model.NoticesPage" resultType="int">
+		SELECT count(*) 
+		FROM infection_notices
+		WHERE 1 = 1
+		<if test="schoolId != null and schoolId != ''">
+			AND schoolId = #{schoolId,jdbcType=INTEGER}
+		</if>	
+		<if test="isRead != null and isRead != ''">
+			AND isRead = #{isRead,jdbcType=VARCHAR}
+		</if>	
+		AND	DATE_FORMAT(createTime,"%Y-%m-%D") = DATE_FORMAT(NOW(),"%Y-%m-%D")
+	</select>
+
+	<!-- 通知学校 -->
+	<insert id="insert" parameterType="cn.infection.entity.Notices">
+		insert into infection_notices
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="schoolId != null">
+				schoolId,
+			</if>
+			<if test="content != null">
+				content,
+			</if>
+			<if test="createTime != null">
+				createTime,
+			</if>
+			<if test="isRead != null">
+				isRead
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="schoolId != null">
+				#{schoolId,jdbcType=INTEGER},
+			</if>
+			<if test="content != null">
+				#{content,jdbcType=VARCHAR},
+			</if>
+			<if test="createTime != null">
+				#{createTime},
+			</if>
+			<if test="isRead != null">
+				#{isRead,jdbcType=INTEGER}
+			</if>
+		</trim>
+	</insert>
+	
+	<!-- 设置已读 -->
+	<update id="update" parameterType="cn.infection.entity.Notices">
+		update infection_notices
+		<set>
+			<if test="isRead != null">
+				isRead = #{isRead,jdbcType=INTEGER}
+			</if>
+		</set>
+		where 1 = 1
+		AND	DATE_FORMAT(createTime,"%Y-%m-%D %H:%i:%s") = DATE_FORMAT(#{time},"%Y-%m-%D %H:%i:%s")
+		and schoolId = #{schoolId}
+	</update>
+
+	<!-- 全部标记为已读（当前登录人） -->
+	<update id="updateAll" parameterType="cn.infection.entity.Notices">
+		UPDATE 
+	  	infection_notices 
+		<set>
+	  		isRead = 1
+	  	</set>
+		WHERE 1 = 1 
+	 	AND schoolId =  #{schoolId} 
+	</update>
+</mapper>

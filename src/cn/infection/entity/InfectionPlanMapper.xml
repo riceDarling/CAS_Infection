@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.infection.dao.InfectionPlanDao">
+
+
+	<insert id="insert" parameterType="cn.infection.entity.InfectionPlan">
+		insert into
+		infection_school_plan (id, planId, schoolId,
+		planImg)
+		values
+		(#{id,jdbcType=INTEGER}, #{planid,jdbcType=INTEGER},
+		#{schoolid,jdbcType=INTEGER},
+		#{planimg,jdbcType=LONGVARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="cn.infection.entity.InfectionPlan">
+		insert into infection_school_plan
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="planid != null">
+				planId,
+			</if>
+			<if test="schoolid != null">
+				schoolId,
+			</if>
+			<if test="planimg != null">
+				planImg,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="planid != null">
+				#{planid,jdbcType=INTEGER},
+			</if>
+			<if test="schoolid != null">
+				#{schoolid,jdbcType=INTEGER},
+			</if>
+			<if test="planimg != null">
+				#{planimg,jdbcType=LONGVARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKey" parameterType="cn.infection.entity.InfectionPlan">
+		update infection_school_plan
+		<set>
+			<if test="planid != null">
+				planId = #{planid,jdbcType=INTEGER},
+			</if>
+			<if test="schoolid != null">
+				schoolId = #{schoolid,jdbcType=INTEGER},
+			</if>
+			<if test="planimg != null">
+				planImg = #{planimg,jdbcType=LONGVARCHAR},
+			</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+
+	<select id="getBySchoolId" parameterType="int"
+		resultType="cn.infection.entity.InfectionPlan">
+		SELECT isp.*,ip.planName FROM infection_school_plan isp
+		LEFT JOIN infection_plan ip ON isp.planId=ip.planId
+		WHERE isp.schoolId= #{schoolId}
+	</select>
+	
+	<select id="selectById" parameterType="int"
+		resultType="cn.infection.entity.InfectionPlan">
+		SELECT isp.*,ip.planName,isc.schoolName
+		FROM infection_school_plan isp
+		LEFT JOIN infection_plan ip ON isp.planId=ip.planId
+		LEFT JOIN infection_school isc ON isp.schoolId=isc.schoolId
+		WHERE isp.id= #{id}
+	</select>
+
+</mapper>

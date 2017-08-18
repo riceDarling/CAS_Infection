@@ -1,0 +1,1077 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.infection.dao.InfectionReportDao">
+	
+	<select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultType="cn.infection.entity.InfectionReport">
+		SELECT
+		ir.cardId,ir.schoolId,ir.parentName,ir.patientName,ir.classes,ir.idNumber,ir.sex,
+		ir.age,ir.type,ir.address,ir.area,ir.telephone,ir.infectionId,ir.result,ir.reporter,
+		ir.isInfection,ir.isPass,ir.note,ir.isDel,ir.restore,ir.restoreImg,ir.diagnosisImg,
+		ir.isInfectionnum,ir.iszero,ir.keeptuneimg,ir.implementationimg,ir.end,
+		date_format(ir.deathTime,'%Y-%c-%d %h:%i:%s') as deathTime,
+		date_format(ir.onsetTime,'%Y-%c-%d %h:%i:%s') as onsetTime,
+		date_format(ir.birthDay,'%Y-%c-%d% %h:%i:%s') as birthDay,
+		date_format(ir.diagnosisTime,'%Y-%c-%d %h:%i:%s') as diagnosisTime,
+		date_format(ir.fillTime,'%Y-%c-%d %h:%i:%s') as fillTime,
+		date_format(ir.revisedTime,'%Y-%c-%d %h:%i:%s') as revisedTime,
+		date_format(ir.auditTime,'%Y-%c-%d %h:%i:%s') as auditTime,
+		isch.schoolName,isch.level,it.typeId,it.typeName,ifi.infectionName
+		FROM infection_report ir
+		LEFT JOIN
+		infection_infection ifi ON ir.infectionId=ifi.infectionId
+		LEFT JOIN infection_type it ON ifi.type=it.typeId
+		LEFT JOIN
+		infection_school isch ON ir.schoolId = isch.schoolId
+		where ir.cardId = #{cardId}
+	</select>
+	
+	<select id="selectReportById" parameterType="java.lang.Integer" resultType="cn.infection.entity.InfectionReport">
+		SELECT
+		ir.cardId,ir.schoolId,ir.parentName,ir.patientName,ir.classes,ir.idNumber,ir.sex,
+		ir.age,ir.type,ir.address,ir.area,ir.telephone,ir.infectionId,ir.result,ir.reporter,
+		ir.isInfection,ir.isPass,ir.note,ir.isDel,ir.restore,ir.restoreImg,ir.diagnosisImg,
+		ir.isInfectionnum,ir.iszero,ir.keeptuneimg,ir.implementationimg,ir.end,
+		date_format(ir.deathTime,'%Y-%c-%d %h:%i:%s') as deathTime,
+		date_format(ir.onsetTime,'%Y-%c-%d %h:%i:%s') as onsetTime,
+		date_format(ir.birthDay,'%Y-%c-%d% %h:%i:%s') as birthDay,
+		date_format(ir.diagnosisTime,'%Y-%c-%d %h:%i:%s') as diagnosisTime,
+		date_format(ir.fillTime,'%Y-%c-%d %h:%i:%s') as fillTime,
+		date_format(ir.revisedTime,'%Y-%c-%d %h:%i:%s') as revisedTime,
+		date_format(ir.auditTime,'%Y-%c-%d %h:%i:%s') as auditTime,
+		isch.schoolName,isch.level,it.typeId,it.typeName,ifi.infectionName
+		FROM infection_report ir
+		LEFT JOIN
+		infection_infection ifi ON ir.infectionId=ifi.infectionId
+		LEFT JOIN infection_type it ON ifi.type=it.typeId
+		LEFT JOIN
+		infection_school isch ON ir.schoolId = isch.schoolId
+		where ir.cardId = #{cardId}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from infection_report
+		where cardId = #{cardId}
+	</delete>
+	<insert id="insert" parameterType="cn.infection.entity.InfectionReport">
+		insert into infection_report (cardId, schoolId, parentName,
+		patientName, classes,
+		idNumber,
+		sex, age, birthDay,
+		type, address, area,
+		telephone, onsetTime, infectionId,
+		diagnosisTime, result, deathTime,
+		reporter, fillTime, isInfection,
+		isPass, isDel, note,diagnosisImg,revisedTime,auditTime,restore,restoreImg,
+		isInfectionnum,iszero,keeptuneimg,implementationimg,end,
+		)
+		values
+		(#{cardId}, #{schoolId},
+		#{parentName},
+		#{patientName},
+		#{classes}, #{idNumber},
+		#{sex}, #{age,jdbcType=INTEGER}, #{birthDay},
+		#{type},
+		#{address,jdbcType=VARCHAR}, #{area},
+		#{telephone}, #{onsetTime}, #{infectionId},
+		#{diagnosisTime}, #{result},
+		#{deathTime},
+		#{reporter}, #{fillTime},
+		#{isInfection},
+		#{isPass}, #{isDel},
+		#{note},#{diagnosisImg},#{revisedTime},#{auditTime},
+		#{restore},#{restoreImg},
+		#{isInfectionnum},#{iszero},#{keeptuneimg},#{implementationimg},#{end}
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="cn.infection.entity.InfectionReport">
+		insert into infection_report
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="cardId != null">
+				cardId,
+			</if>
+			<if test="schoolId != null">
+				schoolId,
+			</if>
+			<if test="parentName != null">
+				parentName,
+			</if>
+			<if test="patientName != null">
+				patientName,
+			</if>
+			<if test="classes != null">
+				classes,
+			</if>
+			<if test="idNumber != null">
+				idNumber,
+			</if>
+			<if test="sex != null">
+				sex,
+			</if>
+			<if test="age != null">
+				age,
+			</if>
+			<if test="birthDay != null &amp;&amp;  birthDay != ''">
+				birthDay,
+			</if>
+			<if test="type != null">
+				type,
+			</if>
+			<if test="address != null">
+				address,
+			</if>
+			<if test="area != null">
+				area,
+			</if>
+			<if test="telephone != null">
+				telephone,
+			</if>
+			<if test="onsetTime != null &amp;&amp;  onsetTime != ''">
+				onsetTime,
+			</if>
+			<if test="infectionId != null">
+				infectionId,
+			</if>
+			<if test="diagnosisTime != null &amp;&amp;  diagnosisTime != ''">
+				diagnosisTime,
+			</if>
+			<if test="result != null">
+				result,
+			</if>
+			<if test="deathTime != null  &amp;&amp;  deathTime != ''">
+				deathTime,
+			</if>
+			<if test="reporter != null">
+				reporter,
+			</if>
+			<if test="fillTime != null &amp;&amp;  fillTime != ''">
+				fillTime,
+			</if>
+			<if test="isInfection != null">
+				isInfection,
+			</if>
+			<if test="isPass != null">
+				isPass,
+			</if>
+			<if test="isDel != null">
+				isDel,
+			</if>
+			<if test="note != null">
+				note,
+			</if>
+			<if test="diagnosisImg != null">
+				diagnosisImg,
+			</if>
+			<if test="revisedTime != null">
+				revisedTime,
+			</if>
+			<if test="auditTime != null">
+				auditTime,
+			</if>
+			<if test="restore != null">
+				restore,
+			</if>
+			<if test="restoreImg != null">
+				restoreImg
+			</if>
+			<if test="isInfectionnum != null">
+				isInfectionnum
+			</if>
+			<if test="iszero != null">
+				iszero
+			</if>
+			<if test="keeptuneimg != null">
+				keeptuneimg
+			</if>
+			<if test="implementationimg != null">
+				implementationimg
+			</if>
+			<if test="end != null">
+				end
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="cardId != null">
+				#{cardId},
+			</if>
+			<if test="schoolId != null">
+				#{schoolId},
+			</if>
+			<if test="parentName != null">
+				#{parentName},
+			</if>
+			<if test="patientName != null">
+				#{patientName},
+			</if>
+			<if test="classes != null">
+				#{classes},
+			</if>
+			<if test="idNumber != null">
+				#{idNumber},
+			</if>
+			<if test="sex != null">
+				#{sex},
+			</if>
+			<if test="age != null">
+				#{age},
+			</if>
+			<if test="birthDay != null  &amp;&amp;  birthDay != ''">
+				#{birthDay},
+			</if>
+			<if test="type != null">
+				#{type},
+			</if>
+			<if test="address != null">
+				#{address},
+			</if>
+			<if test="area != null">
+				#{area},
+			</if>
+			<if test="telephone != null">
+				#{telephone},
+			</if>
+			<if test="onsetTime != null &amp;&amp;  onsetTime != ''">
+				#{onsetTime},
+			</if>
+			<if test="infectionId != null">
+				#{infectionId},
+			</if>
+			<if test="diagnosisTime != null &amp;&amp;  diagnosisTime != ''">
+				#{diagnosisTime},
+			</if>
+			<if test="result != null">
+				#{result},
+			</if>
+			<if test="deathTime != null &amp;&amp;  deathTime != ''">
+				#{deathTime},
+			</if>
+			<if test="reporter != null">
+				#{reporter},
+			</if>
+			<if test="fillTime != null">
+				#{fillTime},
+			</if>
+			<if test="isInfection != null">
+				#{isInfection},
+			</if>
+			<if test="isPass != null">
+				#{isPass},
+			</if>
+			<if test="isDel != null">
+				#{isDel},
+			</if>
+			<if test="note != null">
+				#{note},
+			</if>
+			<if test="diagnosisImg != null">
+				#{diagnosisImg},
+			</if>
+			<if test="revisedTime != null">
+				#{revisedTime},
+			</if>
+			<if test="auditTime != null">
+				#{auditTime},
+			</if>
+			<if test="restore != null">
+				#{restore},
+			</if>
+			<if test="restoreImg != null">
+				#{restoreImg}
+			</if>
+			<if test="isInfectionnum != null">
+				#{isInfectionnum}
+			</if>
+			<if test="iszero != null">
+				#{iszero}
+			</if>
+			<if test="keeptuneimg != null">
+				#{keeptuneimg}
+			</if>
+			<if test="implementationimg != null">
+				#{implementationimg}
+			</if>
+			<if test="end != null">
+				#{end}
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="cn.infection.entity.InfectionReport">
+		update infection_report
+		<set>
+			<if test="schoolId != null">
+				schoolId=#{schoolId},
+			</if>
+			<if test="parentName != null">
+				parentName=#{parentName},
+			</if>
+			<if test="patientName != null">
+				patientName=#{patientName},
+			</if>
+			<if test="classes != null">
+				classes=#{classes},
+			</if>
+			<if test="idNumber != null">
+				idNumber=#{idNumber},
+			</if>
+			<if test="sex != null">
+				sex=#{sex},
+			</if>
+			<if test="age != null">
+				age=#{age},
+			</if>
+			<if test="birthDay != null &amp;&amp;  birthDay != ''">
+				birthDay=#{birthDay},
+			</if>
+			<if test="type != null">
+				type=#{type},
+			</if>
+			<if test="address != null">
+				address=#{address},
+			</if>
+			<if test="area != null">
+				area=#{area},
+			</if>
+			<if test="telephone != null">
+				telephone=#{telephone},
+			</if>
+			<if test="onsetTime != null &amp;&amp;  onsetTime != ''">
+				onsetTime=#{onsetTime},
+			</if>
+			<if test="infectionId != null">
+				infectionId=#{infectionId},
+			</if>
+			<if test="diagnosisTime != null &amp;&amp;  diagnosisTime != ''">
+				diagnosisTime=#{diagnosisTime},
+			</if>
+			<if test="result != null">
+				result=#{result},
+			</if>
+			<if test="deathTime != null &amp;&amp;  deathTime != ''">
+				deathTime=#{deathTime},
+			</if>
+			<if test="reporter != null">
+				reporter=#{reporter},
+			</if>
+			<if test="fillTime != null &amp;&amp;  fillTime != ''">
+				fillTime=#{fillTime},
+			</if>
+			<if test="isInfection != null">
+				isInfection=#{isInfection},
+			</if>
+			<if test="isPass != null">
+				isPass=#{isPass},
+			</if>
+			<if test="isDel != null">
+				isDel=#{isDel},
+			</if>
+			<if test="note != null">
+				note=#{note},
+			</if>
+			<if test="diagnosisImg != null">
+				diagnosisImg=#{diagnosisImg},
+			</if>
+			<if test="revisedTime != null">
+				revisedTime=#{revisedTime},
+			</if>
+			<if test="auditTime != null">
+				auditTime=#{auditTime},
+			</if>
+			<if test="restore != null">
+				restore=#{restore},
+			</if>
+			<if test="restoreImg != null">
+				restoreImg=#{restoreImg}
+			</if>
+			<if test="isInfectionnum != null">
+				isInfectionnum=#{isInfectionnum}
+			</if>
+			<if test="iszero != null">
+				iszero=#{iszero}
+			</if>
+			<if test="keeptuneimg != null">
+				keeptuneimg=#{keeptuneimg}
+			</if>
+			<if test="implementationimg != null">
+				implementationimg=#{implementationimg}
+			</if>
+			<if test="end != null">
+				end=#{end}
+			</if>
+		</set>
+		where cardId = #{cardId}
+	</update>
+	<update id="updateByPrimaryKeyWithBLOBs" parameterType="cn.infection.entity.InfectionReport">
+		update infection_report
+		set schoolId = #{schoolId},
+		parentName =
+		#{parentName},
+		patientName = #{patientName},
+		classes = #{classes},
+		idNumber = #{idNumber},
+		sex = #{sex},
+		age = #{age},
+		birthDay =
+		#{birthDay},
+		type = #{type},
+		address = #{address},
+		area = #{area},
+		telephone = #{telephone},
+		onsetTime = #{onsetTime},
+		infectionId = #{infectionId},
+		diagnosisTime = #{diagnosisTime},
+		result = #{result},
+		deathTime = #{deathTime},
+		reporter =
+		#{reporter},
+		fillTime = #{fillTime},
+		isInfection = #{isInfection},
+		isPass = #{isPass},
+		isDel = #{isDel},
+		note = #{note},
+		diagnosisImg=#{diagnosisImg},
+		revisedTime=#{revisedTime},
+		auditTime=#{auditTime},
+		restore=#{restore},
+		restoreImg=#{restoreImg},
+		isInfectionnum=#{isInfectionnum},
+		iszero=#{iszero},
+		keeptuneimg=#{keeptuneimg},
+		implementationimg=#{implementationimg},
+		end=#{end}
+		where
+		cardId = #{cardId}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="cn.infection.entity.InfectionReport">
+		update infection_report
+		set schoolId = #{schoolId},
+		parentName =
+		#{parentName},
+		patientName = #{patientName},
+		classes = #{classes},
+		idNumber = #{idNumber},
+		sex = #{sex},
+		age = #{age},
+		birthDay =
+		#{birthDay},
+		type = #{type},
+		address = #{address},
+		area = #{area},
+		telephone = #{telephone},
+		onsetTime = #{onsetTime},
+		infectionId = #{infectionId},
+		diagnosisTime = #{diagnosisTime},
+		result = #{result},
+		deathTime = #{deathTime},
+		reporter =
+		#{reporter},
+		fillTime = #{fillTime},
+		isInfection = #{isInfection},
+		isPass = #{isPass},
+		isDel = #{isDel},
+		diagnosisImg=#{diagnosisImg},
+		revisedTime=#{revisedTime},
+		auditTime=#{auditTime},
+		restore=#{restore},
+		restoreImg=#{restoreImg},
+		isInfectionnum=#{isInfectionnum},
+		iszero=#{iszero},
+		keeptuneimg=#{keeptuneimg},
+		implementationimg=#{implementationimg},
+		end=#{end}
+		where cardId = #{cardId}
+	</update>
+	<!-- 根据条件分页查询报告 -->
+	<select id="getAllReport" parameterType="cn.infection.model.ReportPage" resultType="cn.infection.entity.InfectionReport">
+		SELECT
+		ir.cardId,ir.schoolId,ir.parentName,ir.patientName,ir.classes,ir.idNumber,ir.sex,
+		ir.age,ir.type,ir.address,ir.area,ir.telephone,ir.infectionId,ir.result,ir.reporter,
+		ir.isInfection,ir.isPass,ir.note,ir.isDel,ir.restore,
+		isch.schoolName,it.typeName,ifi.infectionName,
+		ir.isInfectionnum,ir.iszero,ir.keeptuneimg,ir.implementationimg,ir.end,
+		date_format(ir.deathTime,'%Y-%c-%d %h:%i:%s') as deathTime,
+		date_format(ir.onsetTime,'%Y-%c-%d %h:%i:%s') as onsetTime,
+		date_format(ir.birthDay,'%Y-%c-%d% %h:%i:%s') as birthDay,
+		date_format(ir.diagnosisTime,'%Y-%c-%d %h:%i:%s') as diagnosisTime,
+		date_format(ir.fillTime,'%Y-%c-%d %h:%i:%s') as fillTime,
+		date_format(ir.revisedTime,'%Y-%c-%d %h:%i:%s') as revisedTime,
+		date_format(ir.auditTime,'%Y-%c-%d %h:%i:%s') as auditTime
+		FROM infection_report ir
+		LEFT JOIN infection_infection ifi ON
+		ir.infectionId=ifi.infectionId
+		LEFT JOIN
+		infection_type it ON
+		ifi.type=it.typeId
+		LEFT JOIN
+		infection_school isch ON
+		ir.schoolId =
+		isch.schoolId
+		WHERE 1 = 1
+
+		<if test="infectionType != null &amp;&amp;  infectionType != ''">
+			AND it.typeId = #{infectionType}
+		</if>
+		<if test="infectionId != null &amp;&amp;  infectionId != ''">
+			AND ir.infectionId = #{infectionId}
+		</if>
+
+		<if test="schooltype != null &amp;&amp;  schooltype != ''">
+			AND isch.level = #{schooltype}
+		</if>
+		<if test="schoolId != null &amp;&amp;  schoolId != ''">
+			AND ir.schoolId = #{schoolId}
+		</if>
+		<if test="type != null &amp;&amp;  type != ''">
+			AND ir.type = #{type}
+		</if>
+		<if test="isPass==0 ">
+			AND ir.isPass = 0
+			AND ir.isDel = 0
+		</if>
+		<if test="isPass==1 ">
+			AND ir.isPass = 1
+			AND ir.isDel = 0
+		</if>
+		<if test="isPass==2 ">
+			AND ir.isDel = 1
+		</if>
+		<!-- timeType为0时根据发病时间 -->
+		<if test='timeType != null &amp;&amp; timeType.equals("0") &amp;&amp; startTime!=null &amp;&amp; !startTime.equals("")'>
+			AND ir.onsetTime &gt;= #{startTime}
+		</if>
+		<if test='timeType != null &amp;&amp; timeType.equals("0") &amp;&amp; endTime!=null &amp;&amp; !endTime.equals("")'>
+			AND ir.onsetTime &lt;= #{endTime}
+		</if>
+		<!-- timeType为1时根据诊断时间 -->
+		<if test='timeType != null &amp;&amp; timeType.equals("1") &amp;&amp; startTime!=null &amp;&amp; !startTime.equals("")'>
+			AND ir.diagnosisTime &gt;= #{startTime}
+		</if>
+		<if test='timeType != null &amp;&amp; timeType.equals("1") &amp;&amp; endTime!=null &amp;&amp; !endTime.equals("")'>
+			AND ir.diagnosisTime &lt;= #{endTime}
+		</if>
+		<!-- timeType为2时根据死亡时间 -->
+		<if test='timeType != null &amp;&amp; timeType.equals("2") &amp;&amp; startTime!=null &amp;&amp; !startTime.equals("")'>
+			AND ir.deathTime &gt;= #{startTime}
+		</if>
+		<if test='timeType != null &amp;&amp; timeType.equals("2") &amp;&amp; endTime!=null &amp;&amp; !endTime.equals("")'>
+			AND ir.deathTime &lt;= #{endTime}
+		</if>
+		<!-- timeType为3时根据填卡时间 -->
+		<if test='timeType != null &amp;&amp; timeType.equals("3") &amp;&amp; startTime!=null &amp;&amp; !startTime.equals("")'>
+			AND ir.fillTime &gt;= #{startTime}
+		</if>
+		<if test='timeType != null &amp;&amp; timeType.equals("3") &amp;&amp; endTime!=null &amp;&amp; !endTime.equals("")'>
+			AND ir.fillTime &lt;= #{endTime}
+		</if>
+		order by ir.cardId desc
+		limit
+		#{begin},#{end}
+	</select>
+
+	<!-- 根据条件分页查询报告 -->
+	<select id="getAllCount" parameterType="cn.infection.model.ReportPage" resultType="int">
+		SELECT count(*)
+		FROM infection_report ir
+		LEFT JOIN infection_infection ifi ON ir.infectionId=ifi.infectionId
+		LEFT JOIN
+		infection_type it ON ifi.type=it.typeId
+		LEFT JOIN
+		infection_school isch ON ir.schoolId = isch.schoolId
+		WHERE 1 = 1
+		<if test="infectionType != null &amp;&amp;  infectionType != ''">
+			AND it.typeId = #{infectionType}
+		</if>
+		<if test="infectionId != null &amp;&amp;  infectionId != ''">
+			AND ir.infectionId = #{infectionId}
+		</if>
+
+		<if test="schooltype != null &amp;&amp;  schooltype != ''">
+			AND isch.level = #{schooltype}
+		</if>
+		<if test="schoolId != null &amp;&amp;  schoolId != ''">
+			AND ir.schoolId = #{schoolId}
+		</if>
+		<if test="type != null &amp;&amp;  type != ''">
+			AND ir.type = #{type}
+		</if>
+		<if test="isPass==0 ">
+			AND ir.isPass = 0
+			AND ir.isDel = 0
+		</if>
+		<if test="isPass==1 ">
+			AND ir.isPass = 1
+			AND ir.isDel = 0
+		</if>
+		<if test="isPass==2 ">
+			AND ir.isDel = 1
+		</if>
+		<!-- timeType为0时根据发病时间 -->
+		<if test='timeType != null &amp;&amp; timeType.equals("0") &amp;&amp; startTime!=null &amp;&amp; !startTime.equals("")'>
+			AND ir.onsetTime &gt;= #{startTime}
+		</if>
+		<if test='timeType != null &amp;&amp; timeType.equals("0") &amp;&amp; endTime!=null &amp;&amp; !endTime.equals("")'>
+			AND ir.onsetTime &lt;= #{endTime}
+		</if>
+		<!-- timeType为1时根据诊断时间 -->
+		<if test='timeType != null &amp;&amp; timeType.equals("1") &amp;&amp; startTime!=null &amp;&amp; !startTime.equals("")'>
+			AND ir.diagnosisTime &gt;= #{startTime}
+		</if>
+		<if test='timeType != null &amp;&amp; timeType.equals("1") &amp;&amp; endTime!=null &amp;&amp; !endTime.equals("")'>
+			AND ir.diagnosisTime &lt;= #{endTime}
+		</if>
+		<!-- timeType为2时根据死亡时间 -->
+		<if test='timeType != null &amp;&amp; timeType.equals("2") &amp;&amp; startTime!=null &amp;&amp; !startTime.equals("")'>
+			AND ir.deathTime &gt;= #{startTime}
+		</if>
+		<if test='timeType != null &amp;&amp; timeType.equals("2") &amp;&amp; endTime!=null &amp;&amp; !endTime.equals("")'>
+			AND ir.deathTime &lt;= #{endTime}
+		</if>
+		<!-- timeType为3时根据填卡时间 -->
+		<if test='timeType != null &amp;&amp; timeType.equals("3") &amp;&amp; startTime!=null &amp;&amp; !startTime.equals("")'>
+			AND ir.fillTime &gt;= #{startTime}
+		</if>
+		<if test='timeType != null &amp;&amp; timeType.equals("3") &amp;&amp; endTime!=null &amp;&amp; !endTime.equals("")'>
+			AND ir.fillTime &lt;= #{endTime}
+		</if>
+	</select>
+
+	<!-- 首页左侧数据 -->
+	<select id="getIndexData" parameterType="cn.infection.model.ReportPage" resultType="map">
+		SELECT
+		ir.schoolId,
+		isc.schoolName,
+		COUNT(ir.infectionId) AS countNum
+		FROM
+		infection_report ir
+		LEFT JOIN infection_school isc
+		ON
+		ir.schoolId = isc.schoolId
+		WHERE 1 = 1
+		AND ir.isDel = 0
+		<if test='startTime == null || startTime.equals("") &amp;&amp; endTime == null || endTime.equals("")'>
+			AND date_format(ir.fillTime,'%Y-%m-%D') = date_format(now(),'%Y-%m-%D')
+		</if>
+		<if test='startTime != null &amp;&amp; !startTime.equals("")'>
+			AND ir.fillTime &gt;= #{startTime}
+		</if>
+		<if test='endTime != null &amp;&amp; !endTime.equals("")'>
+			AND ir.fillTime &lt;= #{endTime}
+		</if>
+		GROUP BY isc.schoolId
+		LIMIT
+		#{begin},#{end}
+	</select>
+
+	<!-- 首页左侧数据记录数 -->
+	<select id="getIndexCount" parameterType="cn.infection.model.ReportPage" resultType="int">
+		select count(*)
+		from (
+		SELECT
+		ir.schoolId,
+		isc.schoolName,
+		COUNT(ir.cardId) AS countNum
+		FROM
+		infection_report ir
+		LEFT JOIN
+		infection_school isc
+		ON ir.schoolId = isc.schoolId
+		WHERE 1 = 1
+		AND ir.isDel = 0
+		<if test='startTime == null || startTime.equals("") &amp;&amp; endTime == null || endTime.equals("")'>
+			AND date_format(ir.fillTime,'%Y-%m-%D') = date_format(now(),'%Y-%m-%D')
+		</if>
+		<if test='startTime != null &amp;&amp; !startTime.equals("")'>
+			AND ir.fillTime &gt;= #{startTime}
+		</if>
+		<if test='endTime != null &amp;&amp; !endTime.equals("")'>
+			AND ir.fillTime &lt;= #{endTime}
+		</if>
+		GROUP BY isc.schoolId ) amp
+	</select>
+
+	<!-- 首页右侧数据 -->
+	<select id="getOtherData" parameterType="cn.infection.model.ReportPage" resultType="map">
+		SELECT
+		isc.schoolId,
+		isc.schoolName
+		FROM infection_school isc
+		WHERE 1 = 1
+		AND isc.`schoolId` NOT IN (SELECT
+		ir.schoolId
+		FROM
+		infection_report ir
+		LEFT JOIN infection_school isc
+		ON ir.schoolId = isc.schoolId
+		WHERE 1 = 1
+		AND ir.isDel = 0
+		<if test='startTime == null || startTime.equals("") &amp;&amp; endTime == null || endTime.equals("")'>
+			AND date_format(ir.fillTime,'%Y-%m-%D') = date_format(now(),'%Y-%m-%D')
+		</if>
+		<if test='startTime != null &amp;&amp; !startTime.equals("")'>
+			AND ir.fillTime &gt;= #{startTime}
+		</if>
+		<if test='endTime != null &amp;&amp; !endTime.equals("")'>
+			AND ir.fillTime &lt;= #{endTime}
+		</if>
+		GROUP BY isc.schoolId )
+		LIMIT
+		#{begin},#{end}
+	</select>
+
+	<!-- 首页右侧数据记录数 -->
+	<select id="getOtherCount" parameterType="cn.infection.model.ReportPage" resultType="int">
+		SELECT COUNT(*) COUNT
+		FROM(
+		SELECT
+		isc.schoolId,
+		isc.schoolName
+		FROM infection_school isc
+		WHERE 1 = 1
+		AND isc.`schoolId` NOT IN
+		(SELECT
+		ir.schoolId
+		FROM
+		infection_report ir
+		LEFT JOIN infection_school isc
+		ON ir.schoolId = isc.schoolId
+		WHERE 1 = 1
+		AND ir.isDel = 0
+		<if test='startTime == null || startTime.equals("") &amp;&amp; endTime == null || endTime.equals("")'>
+			AND date_format(ir.fillTime,'%Y-%m-%D') = date_format(now(),'%Y-%m-%D')
+		</if>
+		<if test='startTime != null &amp;&amp; !startTime.equals("")'>
+			AND ir.fillTime &gt;= #{startTime}
+		</if>
+		<if test='endTime != null &amp;&amp; !endTime.equals("")'>
+			AND ir.fillTime &lt;= #{endTime}
+		</if>
+		GROUP BY isc.schoolId )
+		) amp
+	</select>
+
+	<!-- 未上报学校数 -->
+	<select id="getNotSchoolCount" parameterType="cn.infection.model.ReportPage" resultType="int">
+		SELECT
+		COUNT(schoolId) count
+		FROM
+		infection_school isc
+		WHERE schoolId NOT IN
+		(SELECT DISTINCT
+		ir.schoolId
+		FROM
+		infection_report ir
+		WHERE 1 = 1
+		AND ir.isDel = 0
+		<if test='startTime == null || startTime.equals("") &amp;&amp; endTime == null || endTime.equals("")'>
+			AND date_format(ir.fillTime,'%Y-%m-%D') = date_format(now(),'%Y-%m-%D')
+		</if>
+		<if test='startTime != null &amp;&amp; !startTime.equals("")'>
+			AND ir.fillTime &gt;= #{startTime}
+		</if>
+		<if test='endTime != null &amp;&amp; !endTime.equals("")'>
+			AND ir.fillTime &lt;= #{endTime}
+		</if>
+		)
+	</select>
+
+	<!-- 传染病总数 -->
+	<select id="getInfectionCount" parameterType="cn.infection.model.ReportPage" resultType="int">
+		SELECT SUM(countNum)
+		FROM
+		(SELECT
+		ir.schoolId,
+		isc.schoolName,
+		COUNT(ir.cardId) AS countNum
+		FROM
+		infection_report ir
+		LEFT JOIN
+		infection_school isc
+		ON ir.schoolId = isc.schoolId
+		WHERE 1 = 1
+		AND ir.isDel = 0
+		<if test='startTime == null || startTime.equals("") &amp;&amp; endTime == null || endTime.equals("")'>
+			AND date_format(ir.fillTime,'%Y-%m-%D') = date_format(now(),'%Y-%m-%D')
+		</if>
+		<if test='startTime != null &amp;&amp; !startTime.equals("")'>
+			AND ir.fillTime &gt;= #{startTime}
+		</if>
+		<if test='endTime != null &amp;&amp; !endTime.equals("")'>
+			AND ir.fillTime &lt;= #{endTime}
+		</if>
+		GROUP BY isc.schoolId) amp
+	</select>
+	
+	<!-- 统计发病数量(饼状图、柱状图) -->
+	<select id="getChartData" parameterType="cn.infection.model.ChartsPage" resultType="map">
+		SELECT 
+		  ii.infectionName infectionName,
+		  COUNT(*) count
+		FROM
+		  infection_report ir 
+		  LEFT JOIN infection_infection ii 
+		    ON ii.infectionId = ir.infectionId 
+		  LEFT JOIN infection_school isc
+		    ON ir.schoolId = isc.schoolId
+		WHERE ir.onsetTime IS NOT NULL 
+		AND ir.isDel = 0
+		<if test='startTime == null || startTime.equals("") &amp;&amp; endTime == null || endTime.equals("")'>
+			AND date_format(ir.fillTime,'%Y') = date_format(now(),'%Y')
+		</if>
+		<if test='startTime != null &amp;&amp; !startTime.equals("")'>
+			AND ir.fillTime &gt;= #{startTime}
+		</if>
+		<if test='endTime != null &amp;&amp; !endTime.equals("")'>
+			AND ir.fillTime &lt;= #{endTime}
+		</if>
+		<if test='level != null &amp;&amp; !level.equals("")'>
+			AND isc.level = #{level}
+		</if>
+		<if test='schoolId != null &amp;&amp; !schoolId.equals("")'>
+			AND isc.schoolId = #{schoolId}
+		</if>
+		<if test='schoolName != null &amp;&amp; !schoolName.equals("")'>
+			AND isc.schoolName = #{schoolName}
+		</if>
+		<if test='type != null &amp;&amp; !type.equals("")'>
+			AND ii.type = #{type}
+		</if>
+		<if test='infectionName != null &amp;&amp; !infectionName.equals("")'>
+			AND ii.infectionName = #{infectionName}
+		</if>
+		GROUP BY ii.infectionName 
+	</select>
+	
+	<!-- 统计报告卡数量 -->
+	<select id="getChartCount" parameterType="cn.infection.model.ChartsPage" resultType="map">
+		SELECT 
+		  ii.infectionName infectionName,
+		  COUNT(*) count
+		FROM
+		  infection_report ir 
+		  LEFT JOIN infection_infection ii 
+		    ON ii.infectionId = ir.infectionId 
+		WHERE 1 = 1
+		AND ir.isDel = 0
+		<if test='startTime == null || startTime.equals("") &amp;&amp; endTime == null || endTime.equals("")'>
+			AND date_format(ir.fillTime,'%Y') = date_format(now(),'%Y')
+		</if>
+		<if test='startTime != null &amp;&amp; !startTime.equals("")'>
+			AND ir.fillTime &gt;= #{startTime}
+		</if>
+		<if test='endTime != null &amp;&amp; !endTime.equals("")'>
+			AND ir.fillTime &lt;= #{endTime}
+		</if>
+		GROUP BY ir.infectionId 
+	</select>
+	
+	<!-- 首页右侧数据(不分页) 用于处理一键通知 -->
+	<select id="getSchoolIdByCond" parameterType="cn.infection.model.ReportPage" resultType="map">
+		SELECT
+		isc.schoolId,
+		isc.schoolName
+		FROM infection_school isc
+		WHERE 1 = 1
+		AND isc.`schoolId` NOT IN (SELECT
+		ir.schoolId
+		FROM
+		infection_report ir
+		LEFT JOIN infection_school isc
+		ON ir.schoolId = isc.schoolId
+		WHERE 1 = 1
+		AND ir.isDel = 0
+		<if test='startTime == null || startTime.equals("") &amp;&amp; endTime == null || endTime.equals("")'>
+			AND date_format(ir.fillTime,'%Y-%m-%D') = date_format(now(),'%Y-%m-%D')
+		</if>
+		<if test='startTime != null &amp;&amp; !startTime.equals("")'>
+			AND ir.fillTime &gt;= #{startTime}
+		</if>
+		<if test='endTime != null &amp;&amp; !endTime.equals("")'>
+			AND ir.fillTime &lt;= #{endTime}
+		</if>
+		GROUP BY isc.schoolId )
+	</select>
+	
+	<!-- 月年对比折线图 -->
+	<select id="getLineChart" parameterType="cn.infection.model.LineChartParams" resultType="map">
+		SELECT 
+		<if test='month != null &amp;&amp; !month.equals("")'>
+		  DATE_FORMAT(ir.fillTime,"%Y-%m-%d") fillTime,
+		</if>
+		<if test='month == null || month.equals("")'>
+		  DATE_FORMAT(ir.fillTime,"%Y-%m") fillTime,
+		</if>
+		  COUNT(*) count
+		FROM
+		  infection_report ir 
+		  LEFT JOIN infection_infection ii 
+		    ON ii.infectionId = ir.infectionId 
+		  LEFT JOIN infection_school isc 
+		    ON ir.schoolId = isc.schoolId 
+		WHERE ir.onsetTime IS NOT NULL 
+		AND ir.isDel = 0
+		AND ir.iszero = 0
+		<if test='level != null &amp;&amp; !level.equals("")'>
+		  AND isc.level = #{level}
+		</if>
+		<if test='schoolId != null &amp;&amp; !schoolId.equals("")'>
+		  AND ir.schoolId = #{schoolId}
+		</if>
+		<if test='type != null &amp;&amp; !type.equals("")'>
+		  AND ir.type = #{type}
+		</if>
+		<if test='infectionName != null &amp;&amp; !infectionName.equals("")'>
+		  AND ir.infectionId = #{infectionName}
+		</if>
+		<if test='month != null &amp;&amp; !month.equals("") &amp;&amp; year != null &amp;&amp; !year.equals("")'>
+		  AND DATE_FORMAT(ir.fillTime,"%Y-%m") = DATE_FORMAT(#{year},"%Y-%m")
+		</if>
+		<if test='month == null || month.equals("") &amp;&amp; year != null &amp;&amp; !year.equals("")'>
+		  AND DATE_FORMAT(ir.fillTime,"%Y") = DATE_FORMAT(#{year},"%Y")
+		</if>
+		<if test='month != null &amp;&amp; !month.equals("")'>
+		  GROUP BY DAY(ir.fillTime)
+		</if>
+		<if test='month == null || month.equals("")'>
+		  GROUP BY MONTH(ir.fillTime) 
+		</if>
+	</select>
+	
+	<!-- 首页第一次弹窗 根据学校获取详细信息data -->
+	<select id="getReportBySchoolId" parameterType="cn.infection.model.ReportPage" resultType="map">
+		SELECT 
+		  ir.cardId,
+		  ii.infectionName,
+		  COUNT(ir.infectionId) count,
+		  ir.infectionId,
+		  ir.schoolId 
+		FROM
+		  infection_report ir 
+		  LEFT JOIN infection_infection ii 
+		    ON ir.infectionId = ii.infectionId 
+		WHERE 1 = 1
+			AND ir.isDel = 0
+		<if test='schoolId != null &amp;&amp; !schoolId.equals("")'>
+			AND ir.schoolId = #{schoolId}
+		</if>
+		<if test='startTime == null || startTime.equals("") &amp;&amp; endTime == null || endTime.equals("")'>
+			AND date_format(ir.fillTime,'%Y-%m-%D') = date_format(now(),'%Y-%m-%D')
+		</if>
+		<if test='startTime != null &amp;&amp; !startTime.equals("")'>
+			AND ir.fillTime &gt;= #{startTime}
+	  	</if>
+		<if test='endTime != null &amp;&amp; !endTime.equals("")'>
+			AND ir.fillTime &lt;= #{endTime}
+		</if>
+		GROUP BY ir.infectionId 
+	</select>
+	
+	<!-- 首页第一次弹窗 根据学校获取详细信息count -->
+	<select id="getReportCountBySchoolId" parameterType="cn.infection.model.ReportPage" resultType="int">
+		SELECT 
+		  COUNT(*) count
+		FROM
+		  (SELECT 
+		    ir.cardId,
+		    ii.infectionName,
+		    COUNT(ir.infectionId) COUNT,
+		    ir.infectionId,
+		    ir.schoolId 
+		  FROM
+		    infection_report ir 
+		    LEFT JOIN infection_infection ii 
+		      ON ir.infectionId = ii.infectionId 
+		  WHERE 1 = 1
+		    AND ir.isDel = 0
+		  <if test='schoolId != null &amp;&amp;  !schoolId.equals("")'>
+			AND ir.schoolId = #{schoolId}
+		  </if>
+		  <if test='startTime == null || startTime.equals("") &amp;&amp; endTime == null || endTime.equals("")'>
+			AND date_format(ir.fillTime,'%Y-%m-%D') = date_format(now(),'%Y-%m-%D')
+		  </if>
+		  <if test='startTime != null &amp;&amp; !startTime.equals("")'>
+			AND ir.fillTime &gt;= #{startTime}
+	  	  </if>
+		  <if test='endTime != null &amp;&amp; !endTime.equals("")'>
+			AND ir.fillTime &lt;= #{endTime}
+		  </if>
+		    GROUP BY ir.infectionId) amp 
+	</select>
+	
+	<!-- 第二次弹窗 根据学校和疾病获取发病人详情Data -->
+	<select id="getReportDetail" parameterType="cn.infection.model.ReportPage" resultType="map">
+		SELECT 
+		  ir.cardId,
+		  ir.patientName,
+		  ir.classes 
+		FROM
+		  infection_report ir 
+		  LEFT JOIN infection_infection ii 
+		    ON ir.infectionId = ii.infectionId 
+		WHERE 1 = 1 
+		  AND ir.isDel = 0
+		<if test='schoolId != null &amp;&amp;  !schoolId.equals("")'>
+		  AND ir.schoolId = #{schoolId}
+	    </if> 
+		<if test='infectionId != null &amp;&amp;  !infectionId.equals("")'>
+		  AND ir.infectionId = #{infectionId}
+	    </if> 
+	    <if test='startTime == null || startTime.equals("") &amp;&amp; endTime == null || endTime.equals("")'>
+		  AND date_format(ir.fillTime,'%Y-%m-%D') = date_format(now(),'%Y-%m-%D')
+	    </if>
+	    <if test='startTime != null &amp;&amp; !startTime.equals("")'>
+		  AND ir.fillTime &gt;= #{startTime}
+  	    </if>
+	    <if test='endTime != null &amp;&amp; !endTime.equals("")'>
+	      AND ir.fillTime &lt;= #{endTime}
+	    </if>
+	</select>
+	
+	<!-- 第二次弹窗 根据学校和疾病获取发病人详情Count -->
+	<select id="getReportDetailCount" parameterType="cn.infection.model.ReportPage" resultType="int">
+		SELECT 
+		  COUNT(*) count 
+		FROM
+		  infection_report ir 
+		  LEFT JOIN infection_infection ii 
+		    ON ir.infectionId = ii.infectionId 
+		WHERE 1 = 1 
+		  AND ir.isDel = 0
+		<if test='schoolId != null &amp;&amp;  !schoolId.equals("")'>
+		  AND ir.schoolId = #{schoolId}
+	    </if> 
+		<if test='infectionId != null &amp;&amp;  !infectionId.equals("")'>
+		  AND ir.infectionId = #{infectionId}
+	    </if> 
+	    <if test='startTime == null || startTime.equals("") &amp;&amp; endTime == null || endTime.equals("")'>
+		  AND date_format(ir.fillTime,'%Y-%m-%D') = date_format(now(),'%Y-%m-%D')
+	    </if>
+	    <if test='startTime != null &amp;&amp; !startTime.equals("")'>
+		  AND ir.fillTime &gt;= #{startTime}
+  	    </if>
+	    <if test='endTime != null &amp;&amp; !endTime.equals("")'>
+	      AND ir.fillTime &lt;= #{endTime}
+	    </if>
+	</select>
+	
+	<!-- 根据学校查询当日上报数 -->
+	<select id="getNowReportBySchoolId" parameterType="int" resultType="int">
+		SELECT
+		COUNT(*) count
+		FROM infection_report ir
+		WHERE 1 = 1
+		  AND ir.isDel = 0
+		  AND date_format(ir.fillTime,'%Y-%m-%D') = date_format(now(),'%Y-%m-%D')
+		<if test='schoolId != null &amp;&amp;  !schoolId.equals("")'>
+		  AND ir.schoolId = #{schoolId}
+	    </if> 
+	</select>
+	
+	<select id="selectInsulateTimeByReportId" parameterType="int" resultType="int">
+		SELECT ifi.insulateTime 
+		FROM infection_report ife LEFT JOIN infection_infection ifi ON ife.infectionId=ifi.infectionId
+		WHERE ife.cardId=#{cardId}
+	</select>
+	
+	<select id="selectonsetTimeByReportId" parameterType="int" resultType="string">
+		SELECT  date_format(ife.onsetTime,'%Y-%c-%d %h:%i:%s') as onsetTime FROM infection_report ife 
+		WHERE ife.cardId=#{cardId}
+	</select>
+	
+</mapper>

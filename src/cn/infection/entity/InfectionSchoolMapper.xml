@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.infection.dao.InfectionSchoolDao">
+	<resultMap id="BaseResultMap" type="cn.infection.entity.InfectionSchool">
+		<id column="schoolId" jdbcType="INTEGER" property="schoolId" />
+		<result column="schoolName" jdbcType="VARCHAR" property="schoolName" />
+		<result column="address" jdbcType="VARCHAR" property="address" />
+		<result column="level" jdbcType="INTEGER" property="level" />
+		<result column="postalcode" jdbcType="VARCHAR" property="postalcode" />
+		<result column="limkman" jdbcType="VARCHAR" property="limkman" />
+		<result column="telephone" jdbcType="VARCHAR" property="telephone" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		schoolId, schoolName, address, level, postalcode, limkman, telephone
+	</sql>
+	<select id="selectByPrimaryKey" parameterType="java.lang.Integer"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from infection_school
+		where schoolId = #{schoolId,jdbcType=INTEGER}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from infection_school
+		where schoolId = #{schoolId,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="cn.infection.entity.InfectionSchool">
+		insert into infection_school (schoolId, schoolName, address,
+		level, postalcode, limkman,
+		telephone)
+		values (#{schoolId,jdbcType=INTEGER}, #{schoolName,jdbcType=VARCHAR},
+		#{address,jdbcType=VARCHAR},
+		#{level,jdbcType=INTEGER}, #{postalcode,jdbcType=VARCHAR}, #{limkman,jdbcType=VARCHAR},
+		#{telephone,jdbcType=VARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="cn.infection.entity.InfectionSchool" useGeneratedKeys="true" keyProperty="schoolId">
+		insert into infection_school
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="schoolName != null">
+				schoolName,
+			</if>
+			<if test="address != null">
+				address,
+			</if>
+			<if test="level != null">
+				level,
+			</if>
+			<if test="postalcode != null">
+				postalcode,
+			</if>
+			<if test="limkman != null">
+				limkman,
+			</if>
+			<if test="telephone != null">
+				telephone,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="schoolName != null">
+				#{schoolName,jdbcType=VARCHAR},
+			</if>
+			<if test="address != null">
+				#{address,jdbcType=VARCHAR},
+			</if>
+			<if test="level != null">
+				#{level,jdbcType=INTEGER},
+			</if>
+			<if test="postalcode != null">
+				#{postalcode,jdbcType=VARCHAR},
+			</if>
+			<if test="limkman != null">
+				#{limkman,jdbcType=VARCHAR},
+			</if>
+			<if test="telephone != null">
+				#{telephone,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="cn.infection.entity.InfectionSchool">
+		update infection_school
+		<set>
+			<if test="schoolName != null">
+				schoolName = #{schoolName,jdbcType=VARCHAR},
+			</if>
+			<if test="address != null">
+				address = #{address,jdbcType=VARCHAR},
+			</if>
+			<if test="level != null">
+				level = #{level,jdbcType=INTEGER},
+			</if>
+			<if test="postalcode != null">
+				postalcode = #{postalcode,jdbcType=VARCHAR},
+			</if>
+			<if test="limkman != null">
+				limkman = #{limkman,jdbcType=VARCHAR},
+			</if>
+			<if test="telephone != null">
+				telephone = #{telephone,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where schoolId = #{schoolId,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="cn.infection.entity.InfectionSchool">
+		update infection_school
+		set schoolName = #{schoolName,jdbcType=VARCHAR},
+		address = #{address,jdbcType=VARCHAR},
+		level = #{level,jdbcType=INTEGER},
+		postalcode = #{postalcode,jdbcType=VARCHAR},
+		limkman = #{limkman,jdbcType=VARCHAR},
+		telephone = #{telephone,jdbcType=VARCHAR}
+		where schoolId = #{schoolId,jdbcType=INTEGER}
+	</update>
+
+	<!-- 根据条件分页查询学校 -->
+	<select id="getAllSchool" parameterType="cn.infection.model.SchoolPage" resultType="cn.infection.entity.InfectionSchool">
+		SELECT isch.schoolId,isch.schoolName,isch.address,isch.level,isch.postalcode,isch.limkman,isch.telephone,isch.note
+		FROM infection_school isch
+		WHERE 1 = 1
+		<if test="schoolName != null and schoolName != ''">
+			AND isch.schoolName like CONCAT(CONCAT('%',#{schoolName}),'%') 
+		</if>	
+		<if test="schoolId != null and schoolId != ''">
+			AND isch.schoolId like CONCAT(CONCAT('%',#{schoolId}),'%') 
+		</if>	
+		<if test="level != null and level != ''">
+			AND isch.level = #{level,jdbcType=INTEGER}
+		</if>	
+		limit 
+			#{begin},#{end}
+	</select>
+
+	<!-- 根据条件分页查询学校记录数 -->
+	<select id="getAllCount" parameterType="cn.infection.model.SchoolPage" resultType="int">
+		SELECT count(*)
+		FROM infection_school isch
+		WHERE 1 = 1
+		<if test="schoolName != null and schoolName != ''">
+			AND isch.schoolName like CONCAT(CONCAT('%',#{schoolName}),'%') 
+		</if>	
+		<if test="schoolId != null and schoolId != ''">
+			AND isch.schoolId like CONCAT(CONCAT('%',#{schoolId}),'%') 
+		</if>	
+		<if test="level != null and level != ''">
+			AND isch.level = #{level,jdbcType=INTEGER}
+		</if>	
+	</select>
+	
+	<!-- 获取全部级别 -->
+	<select id="getAllLevel" resultType="cn.infection.entity.InfectionSchool">
+		SELECT DISTINCT level FROM infection_school 
+	</select>
+	
+	<!-- 根据办学级别查询所有的学校 -->
+	<select id="getAllSchoolByLevel" resultType="cn.infection.entity.InfectionSchool" parameterType="string">
+		SELECT * FROM infection_school a WHERE a.level=#{levelId}
+	</select>
+	
+</mapper>

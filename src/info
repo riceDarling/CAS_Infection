@@ -1,0 +1,10 @@
+#根据学校层次查询所有学校
+school/getAllSchoolByLevel?levelId=4
+
+
+#获取全部种类
+type/selectAllType 
+#根据种类查询全部的病种  
+infection/getAllByTypeId?typeId=31 
+
+

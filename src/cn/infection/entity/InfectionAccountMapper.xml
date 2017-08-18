@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.infection.dao.AccountDao">
+	
+	<select id="getAccountByName" parameterType="string" resultType="cn.infection.entity.InfectionAccount">
+		select * from infection_account a where a.name=#{name}
+	</select>
+
+	<!-- 插入 -->
+	<insert id="insertSelective" parameterType="cn.infection.entity.InfectionAccount">
+		insert into infection_account
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="name != null">
+				name,
+			</if>
+			<if test="password != null">
+				password,
+			</if>
+			<if test="nickname != null">
+				nickname,
+			</if>
+			<if test="level != null">
+				level,
+			</if>
+			<if test="schoolId != null">
+				schoolId,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="name != null">
+				#{name,jdbcType=VARCHAR},
+			</if>
+			<if test="password != null">
+				#{password,jdbcType=VARCHAR},
+			</if>
+			<if test="nickname != null">
+				#{nickname,jdbcType=VARCHAR},
+			</if>
+			<if test="level != null">
+				#{level,jdbcType=INTEGER},
+			</if>
+			<if test="schoolId != null">
+				#{schoolId,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+	
+	<!-- 修改用户 -->
+	<update id="update" parameterType="cn.infection.entity.InfectionAccount">
+		update infection_account
+		<set>
+			<if test='name != null &amp;&amp; !name.equals("")'>
+				name = #{name,jdbcType=VARCHAR},
+			</if>
+			<if test='password != null &amp;&amp; !password.equals("")'>
+				password = #{password,jdbcType=VARCHAR},
+			</if>
+			<if test='nickname != null &amp;&amp; !nickname.equals("")'>
+				nickname = #{nickname,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+</mapper>
